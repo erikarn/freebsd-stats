@@ -108,4 +108,12 @@ plugin_finish(void)
 {
 }
 
+void
+plugin_fetch_all(void)
+{
+	struct stat_instance *n;
 
+	TAILQ_FOREACH(n, &instances_list, node) {
+		n->stat_fetch(n);
+	}
+}

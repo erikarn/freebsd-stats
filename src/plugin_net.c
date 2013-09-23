@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <err.h>
 
 #include <sys/types.h>
@@ -35,9 +36,34 @@ get_ifmib_general(int row, struct ifmibdata *ifmd)
 }
 
 static int
+plugin_net_fetch(struct stat_instance *instance)
+{
+
+	fprintf(stderr, "%s: id=%d, called\n",
+	    __func__,
+	    instance->instance_id);
+
+	return (0);
+}
+
+static int
 plugin_net_create_instance(struct stat_plugin *plugin,
     struct stat_instance *instance)
 {
+	struct plugin_net_instance *n;
+
+	n = calloc(1, sizeof(*n));
+	if (n == NULL) {
+		warn("%s: calloc", __func__);
+		return (-1);
+	}
+
+	/* XXX for now */
+	n->netif = strdup("lagg0");
+
+	/* XXX methodize this! */
+	instance->state = n;
+	instance->stat_fetch = plugin_net_fetch;
 
 	/* Everything's ok for now */
 	return (0);

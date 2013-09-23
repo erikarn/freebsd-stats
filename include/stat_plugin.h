@@ -20,8 +20,9 @@ extern	int stat_plugin_register(char *name,
 
 extern	struct stat_instance * stat_plugin_create(char *name);
 
-extern	void plugin_init();
-extern	void plugin_finish();
+extern	void plugin_init(void);
+extern	void plugin_finish(void);
 extern	uint32_t plugin_instance_get_next_id(void);
+extern	void plugin_fetch_all(void);
 
 #endif	/* __STAT_PLUGIN_H__ */

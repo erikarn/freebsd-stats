@@ -26,5 +26,10 @@ main(int argc, const char *argv[])
 
 	printf("s1 id=%d, s2 id=%d\n", s1->instance_id, s2->instance_id);
 
+	while (1) {
+		plugin_fetch_all();
+		sleep(1);
+	}
+
 	exit(0);
 }
