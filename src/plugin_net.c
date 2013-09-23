@@ -6,6 +6,7 @@
 #include <sys/socket.h>
 #include <sys/sysctl.h>
 #include <sys/time.h>
+#include <sys/queue.h>
 
 #include <net/if.h>
 #include <net/if_mib.h>
@@ -33,11 +34,13 @@ get_ifmib_general(int row, struct ifmibdata *ifmd)
 	return sysctl(name, 6, ifmd, &len, (void *)0, 0);
 }
 
-static struct stat_instance *
-plugin_net_create_instance(struct stat_plugin *plugin)
+static int
+plugin_net_create_instance(struct stat_plugin *plugin,
+    struct stat_instance *instance)
 {
 
-	return (NULL);
+	/* Everything's ok for now */
+	return (0);
 }
 
 int

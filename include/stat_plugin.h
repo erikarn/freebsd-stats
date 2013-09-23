@@ -4,7 +4,8 @@
 struct stat_plugin;
 struct stat_instance;
 
-typedef	struct stat_instance * stat_plugin_create_func(struct stat_plugin *);
+typedef	int stat_plugin_create_func(struct stat_plugin *,
+	    struct stat_instance *);
 
 struct stat_plugin {
 	char *name;
@@ -21,5 +22,6 @@ extern	struct stat_instance * stat_plugin_create(char *name);
 
 extern	void plugin_init();
 extern	void plugin_finish();
+extern	uint32_t plugin_instance_get_next_id(void);
 
 #endif	/* __STAT_PLUGIN_H__ */
