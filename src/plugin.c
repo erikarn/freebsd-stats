@@ -8,6 +8,9 @@
 #include "stat_plugin.h"
 #include "stat_instance.h"
 
+TAILQ_HEAD(, stat_plugins) plugins_list;
+TAILQ_HEAD(, stat_instance) instances_list;
+
 int
 stat_plugin_register(char *name, stat_plugin_create_func *create_func,
     void *state)
@@ -25,6 +28,8 @@ stat_plugin_register(char *name, stat_plugin_create_func *create_func,
 void
 plugin_init(void)
 {
+	TAILQ_INIT(&plugins_list);
+	TAILQ_INIT(&instances_list);
 }
 
 void

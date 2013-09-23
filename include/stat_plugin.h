@@ -10,6 +10,7 @@ struct stat_plugin {
 	char *name;
 	void *state;
 
+	TAILQ_ENTRY(stat_plugin) node;
 	stat_plugin_create_func * stat_plugin_create;
 };
 

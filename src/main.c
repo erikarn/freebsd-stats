@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include <unistd.h>
 
+#include <sys/queue.h>
+
 #include "stat_instance.h"
 #include "stat_plugin.h"
 
