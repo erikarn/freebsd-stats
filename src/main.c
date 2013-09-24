@@ -4,6 +4,10 @@
 
 #include <sys/queue.h>
 
+#include <sys/param.h> /* for plugin_pmc.h */
+#include <sys/cpuset.h>	/* for plugin_pmc.h */
+#include <pmc.h>	/* for plugin_pmc.h> */
+
 #include "stat_instance.h"
 #include "stat_plugin.h"
 
@@ -35,7 +39,7 @@ main(int argc, const char *argv[])
 	stat_plugin_config(s1, "lagg0");
 	stat_plugin_config(s2, "ix0");
 	stat_plugin_config(s3, "ix1");
-	stat_plugin_config(s4, "-s instructions");
+	stat_plugin_config(s4, "instructions");
 
 	while (1) {
 		plugin_fetch_all();

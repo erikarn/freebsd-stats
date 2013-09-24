@@ -24,5 +24,6 @@ extern	void plugin_init(void);
 extern	void plugin_finish(void);
 extern	uint32_t plugin_instance_get_next_id(void);
 extern	void plugin_fetch_all(void);
+extern	int stat_plugin_config(struct stat_instance *, const char *);
 
 #endif	/* __STAT_PLUGIN_H__ */
