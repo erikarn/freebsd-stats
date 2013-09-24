@@ -46,11 +46,11 @@ plugin_pmc_print_counters(struct stat_instance *instance)
 		/* First, header */
 		c = PMC_IS_SYSTEM_MODE(ev->ev_mode) ? 's' : 'p';
 		if (c == 's')
-			(void) fprintf(stdout, "s/%02d/%s=",
+			(void) fprintf(stdout, "pmc.s.%02d.%s: ",
 			    ev->ev_cpu,
 			    ev->ev_name);
 		else
-			(void) fprintf(stdout, "p/%s=",
+			(void) fprintf(stdout, "pmc.p.%s: ",
 			    ev->ev_name);
 
 		/* Then, data */
