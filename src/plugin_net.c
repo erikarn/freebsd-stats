@@ -36,12 +36,64 @@ get_ifmib_general(int row, struct ifmibdata *ifmd)
 }
 
 static int
+get_ifmib_row_byname(const char *name)
+{
+	uint32_t ifcount;
+	int ret, i;
+	unsigned long l;
+	struct ifmibdata ifmd;
+
+	l = sizeof(ifcount);
+
+	ret = sysctlbyname("net.link.generic.system.ifcount",
+	    (void *) &ifcount, &l, NULL, 0);
+
+	if (ret < 0) {
+		warn("%s: sysctl", __func__);
+		return (-1);
+	}
+
+	fprintf(stderr, "%s: ifcount=%d\n", __func__, ifcount);
+
+	for (i = 1; i <= ifcount; i++) {
+		bzero(&ifmd, sizeof(ifmd));
+		if (get_ifmib_general(i, &ifmd) < 0)
+			continue;
+		fprintf(stderr, "%s: row=%d, ifname=%s\n",
+		    __func__,
+		    i,
+		    ifmd.ifmd_name);
+		if (strlen(ifmd.ifmd_name) == strlen(name) &&
+		    strcmp(name, ifmd.ifmd_name) == 0)
+			return (i);
+	}
+
+	/* Not found */
+	return (-1);
+}
+
+static int
 plugin_net_fetch(struct stat_instance *instance)
 {
+	struct ifmibdata ifmd;
+	struct plugin_net_instance *ni = instance->state;
 
 	fprintf(stderr, "%s: id=%d, called\n",
 	    __func__,
 	    instance->instance_id);
+
+	bzero(&ifmd, sizeof(ifmd));
+	if (get_ifmib_general(ni->row_id, &ifmd) < 0)
+		return (-1);
+
+	/* XXX for now, print it out */
+	printf("%s: %s: pkt.in=%lu, pkt.out=%lu, bytes.in=%lu, bytes.out=%lu\n",
+	    __func__,
+	    ni->netif,
+	    ifmd.ifmd_data.ifi_ipackets,
+	    ifmd.ifmd_data.ifi_opackets,
+	    ifmd.ifmd_data.ifi_ibytes,
+	    ifmd.ifmd_data.ifi_obytes);
 
 	return (0);
 }
@@ -60,6 +112,9 @@ plugin_net_create_instance(struct stat_plugin *plugin,
 
 	/* XXX for now */
 	n->netif = strdup("lagg0");
+
+	/* XXX hack - do setup now; we should defer this lateR */
+	n->row_id = get_ifmib_row_byname(n->netif);
 
 	/* XXX methodize this! */
 	instance->state = n;
