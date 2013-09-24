@@ -95,8 +95,7 @@ plugin_net_fetch(struct stat_instance *instance)
 		return (-1);
 
 	/* XXX for now, print it out */
-	printf("%s: %s: pkt.in=%lu, pkt.out=%lu, bytes.in=%lu, bytes.out=%lu\n",
-	    __func__,
+	printf("%s: pkt.in=%lu, pkt.out=%lu, bytes.in=%lu, bytes.out=%lu\n",
 	    ni->netif,
 	    ifmd.ifmd_data.ifi_ipackets,
 	    ifmd.ifmd_data.ifi_opackets,
