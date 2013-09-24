@@ -95,6 +95,12 @@ stat_plugin_create(char *name)
 	return (n);
 }
 
+int
+stat_plugin_config(struct stat_instance *n, const char *config)
+{
+
+	return (n->stat_config(n, config));
+}
 
 void
 plugin_init(void)
@@ -117,3 +123,4 @@ plugin_fetch_all(void)
 		n->stat_fetch(n);
 	}
 }
+

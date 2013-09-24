@@ -78,9 +78,17 @@ plugin_net_fetch(struct stat_instance *instance)
 	struct ifmibdata ifmd;
 	struct plugin_net_instance *ni = instance->state;
 
+#if 0
 	fprintf(stderr, "%s: id=%d, called\n",
 	    __func__,
 	    instance->instance_id);
+#endif
+
+	/*
+	 * Don't fetch data if we're not yet ready
+	 */
+	if (instance->is_ready == 0)
+		return (-1);
 
 	bzero(&ifmd, sizeof(ifmd));
 	if (get_ifmib_general(ni->row_id, &ifmd) < 0)
@@ -99,6 +107,28 @@ plugin_net_fetch(struct stat_instance *instance)
 }
 
 static int
+plugin_net_config(struct stat_instance *instance, const char *config)
+{
+	struct plugin_net_instance *n = instance->state;
+
+	/* XXX hack - do setup now; we should defer this lateR */
+	n->row_id = get_ifmib_row_byname(config);
+
+	if (n->row_id < 0) {
+		fprintf(stderr, "%s: unknown interface '%s'\n",
+		    __func__,
+		    config);
+		return(-1);
+	}
+
+	n->netif = strdup(config);
+	instance->is_ready = 1;
+
+	return (0);
+}
+
+
+static int
 plugin_net_create_instance(struct stat_plugin *plugin,
     struct stat_instance *instance)
 {
@@ -110,15 +140,15 @@ plugin_net_create_instance(struct stat_plugin *plugin,
 		return (-1);
 	}
 
-	/* XXX for now */
-	n->netif = strdup("lagg0");
-
-	/* XXX hack - do setup now; we should defer this lateR */
-	n->row_id = get_ifmib_row_byname(n->netif);
+	/* Not ready */
+	n->netif = NULL;
+	n->row_id = -1;
 
 	/* XXX methodize this! */
+	instance->is_ready = 0;
 	instance->state = n;
 	instance->stat_fetch = plugin_net_fetch;
+	instance->stat_config = plugin_net_config;
 
 	/* Everything's ok for now */
 	return (0);
