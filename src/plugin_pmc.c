@@ -147,6 +147,61 @@ plugin_pmc_alloc_event(struct stat_instance *instance, enum pmc_mode ev_mode,
 	return (ev);
 }
 
+/*
+ * Free the event.  The caller has to have removed it from the list.
+ * The caller has to also have freed the pmc counter.
+ */
+static void
+plugin_pmc_free_event(struct stat_instance *instance, struct pmcstat_ev *ev)
+{
+	if (ev->ev_name)
+		free(ev->ev_name);
+	if (ev->ev_spec)
+		free(ev->ev_spec);
+	free(ev);
+}
+
+/*
+ * Clone PMC for all active CPUs.  Add it to the list.
+ */
+static void
+plugin_pmc_clone_all_cpus(struct stat_instance *instance,
+     struct pmcstat_ev *ev)
+{
+	int cpu, mcpu;
+	struct pmcstat_ev *ev_clone;
+	struct plugin_pmc_instance *n = instance->state;
+	struct plugin_pmc_parent *p = instance->parent->state;
+
+	mcpu = sizeof(p->cpumask) * NBBY;
+	for (cpu = 0; cpu < mcpu; cpu++) {
+		if (!CPU_ISSET(cpu, &p->cpumask))
+			continue;
+
+		if ((ev_clone = malloc(sizeof(*ev_clone))) == NULL) {
+			warn("ERROR: Out of memory");
+			continue;
+		}
+
+		(void) memset(ev_clone, 0, sizeof(*ev_clone));
+
+		ev_clone->ev_count = ev->ev_count;
+		ev_clone->ev_cpu   = cpu;
+		ev_clone->ev_cumulative = ev->ev_cumulative;
+		ev_clone->ev_flags = ev->ev_flags;
+		ev_clone->ev_mode  = ev->ev_mode;
+		ev_clone->ev_name  = strdup(ev->ev_name);
+		ev_clone->ev_pmcid = ev->ev_pmcid;
+		ev_clone->ev_saved = ev->ev_saved;
+		ev_clone->ev_spec  = strdup(ev->ev_spec);
+
+		TAILQ_INSERT_TAIL(&n->ev_list, ev_clone, ev_next);
+	}
+}
+
+
+
+
 static int
 plugin_pmc_fetch(struct stat_instance *instance)
 {
@@ -159,17 +214,25 @@ static int
 plugin_pmc_config(struct stat_instance *instance, const char *config)
 {
 	struct pmcstat_ev *ev;
+#if 0
 	struct plugin_pmc_instance *n = instance->state;
+#endif
 
 	/* Allocate on CPU 0 only for now */
 	ev = plugin_pmc_alloc_event(instance, PMC_MODE_SC, 0, 0, "instructions");
 	if (ev == NULL)
 		return (-1);
 
+#if 0
 	/* Add to the list */
 	TAILQ_INSERT_TAIL(&n->ev_list, ev, ev_next);
+#endif
 
-	/* XXX Do other CPU events if required */
+	/* Duplicate across all CPUs */
+	plugin_pmc_clone_all_cpus(instance, ev);
+
+	/* Free the original event */
+	plugin_pmc_free_event(instance, ev);
 
 	/* XXX TODO: split the config from the startup method */
 

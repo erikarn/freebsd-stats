@@ -88,6 +88,7 @@ stat_plugin_create(char *name)
 	}
 
 	n->name = strdup(name);
+	n->parent = p;
 
 	TAILQ_INSERT_TAIL(&instances_list, n, node);
 	n->instance_id = plugin_instance_get_next_id();
