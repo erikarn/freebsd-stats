@@ -219,7 +219,7 @@ plugin_pmc_config(struct stat_instance *instance, const char *config)
 #endif
 
 	/* Allocate on CPU 0 only for now */
-	ev = plugin_pmc_alloc_event(instance, PMC_MODE_SC, 0, 0, "instructions");
+	ev = plugin_pmc_alloc_event(instance, PMC_MODE_SC, 0, 0, config);
 	if (ev == NULL)
 		return (-1);
 

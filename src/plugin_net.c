@@ -53,16 +53,20 @@ get_ifmib_row_byname(const char *name)
 		return (-1);
 	}
 
+#if 0
 	fprintf(stderr, "%s: ifcount=%d\n", __func__, ifcount);
+#endif
 
 	for (i = 1; i <= ifcount; i++) {
 		bzero(&ifmd, sizeof(ifmd));
 		if (get_ifmib_general(i, &ifmd) < 0)
 			continue;
+#if 0
 		fprintf(stderr, "%s: row=%d, ifname=%s\n",
 		    __func__,
 		    i,
 		    ifmd.ifmd_name);
+#endif
 		if (strlen(ifmd.ifmd_name) == strlen(name) &&
 		    strcmp(name, ifmd.ifmd_name) == 0)
 			return (i);
