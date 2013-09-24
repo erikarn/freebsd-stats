@@ -97,10 +97,16 @@ plugin_net_fetch(struct stat_instance *instance)
 	/* XXX for now, print it out */
 	printf("%s: pkt.in=%lu, pkt.out=%lu, bytes.in=%lu, bytes.out=%lu\n",
 	    ni->netif,
-	    ifmd.ifmd_data.ifi_ipackets,
-	    ifmd.ifmd_data.ifi_opackets,
-	    ifmd.ifmd_data.ifi_ibytes,
-	    ifmd.ifmd_data.ifi_obytes);
+	    ifmd.ifmd_data.ifi_ipackets - ni->last_rx_pkts,
+	    ifmd.ifmd_data.ifi_opackets - ni->last_tx_pkts,
+	    ifmd.ifmd_data.ifi_ibytes - ni->last_rx_bytes,
+	    ifmd.ifmd_data.ifi_obytes - ni->last_tx_bytes);
+
+	ni->last_tx_pkts = ifmd.ifmd_data.ifi_opackets;
+	ni->last_rx_pkts = ifmd.ifmd_data.ifi_ipackets;
+
+	ni->last_tx_bytes = ifmd.ifmd_data.ifi_obytes;
+	ni->last_rx_bytes = ifmd.ifmd_data.ifi_ibytes;
 
 	return (0);
 }
