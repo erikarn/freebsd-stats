@@ -77,7 +77,7 @@ get_ifmib_row_byname(const char *name)
 }
 
 static int
-plugin_net_fetch(struct stat_instance *instance)
+plugin_net_fetch(struct stat_instance *instance, struct timeval *tv)
 {
 	struct ifmibdata ifmd;
 	struct plugin_net_instance *ni = instance->state;

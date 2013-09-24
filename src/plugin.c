@@ -5,6 +5,7 @@
 #include <err.h>
 
 #include <sys/queue.h>
+#include <sys/time.h>
 
 #include "stat_plugin.h"
 #include "stat_instance.h"
@@ -119,9 +120,18 @@ void
 plugin_fetch_all(void)
 {
 	struct stat_instance *n;
+	struct timeval tv;
 
+	(void) gettimeofday(&tv, NULL);
+
+	printf("start: %lu.%06lu\n",
+	    (unsigned long) tv.tv_sec,
+	    (unsigned long) tv.tv_usec);
 	TAILQ_FOREACH(n, &instances_list, node) {
-		n->stat_fetch(n);
+		n->stat_fetch(n, &tv);
 	}
+	printf("end: %lu.%06lu\n",
+	    (unsigned long) tv.tv_sec,
+	    (unsigned long) tv.tv_usec);
 }
 

@@ -203,7 +203,7 @@ plugin_pmc_clone_all_cpus(struct stat_instance *instance,
 
 
 static int
-plugin_pmc_fetch(struct stat_instance *instance)
+plugin_pmc_fetch(struct stat_instance *instance, struct timeval *tv)
 {
 
 	plugin_pmc_print_counters(instance);
