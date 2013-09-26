@@ -4,7 +4,7 @@
 struct stat_plugin;
 struct stat_instance;
 
-typedef int stat_fetch_func(struct stat_instance *);
+typedef int stat_fetch_func(struct stat_instance *, struct timeval *tv);
 typedef int stat_config_func(struct stat_instance *, const char *config);
 
 struct stat_instance {
