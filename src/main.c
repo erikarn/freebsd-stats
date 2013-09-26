@@ -35,6 +35,7 @@ main(int argc, char *argv[])
 
 	while (1) {
 		plugin_fetch_all();
+		fflush(stdout);
 		sleep(1);
 	}
 
